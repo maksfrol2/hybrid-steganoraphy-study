@@ -700,7 +700,6 @@ class ImageSteganography:
             final_capacity = self._calculate_capacity(direction, x_offset, y_offset, self.blocks[block_idx]['data'])
             
             print(f"Block {block_idx+1} optimization complete:")
-            print(f"Best parameters: {best_pos}")
             print(f"Best fitness: {-best_cost}")  # Negate because we minimized negative PSNR
             print(f"Required capacity: {required_capacity}, Final capacity: {final_capacity}")
             
@@ -782,7 +781,6 @@ class ImageSteganography:
         print(f"Average block PSNR: {sum(block_psnrs)/len(block_psnrs):.2f}")
         print(f"Average block SSIM: {sum(block_ssims)/len(block_ssims):.4f}")
         print(f"Total bit changes: {total_changes} out of {self.host_image.size} pixels ({total_changes/self.host_image.size*100:.2f}%)")
-        print(f"Bits per change ratio: {total_bits/total_changes if total_changes > 0 else 'Infinity'}")
         
         # Save stego image
         cv2.imwrite(self.output_path, stego_image)
@@ -911,7 +909,6 @@ def main():
     
     print("Steganography complete!")
     print(f"PSNR: {psnr:.2f}")
-    print(f"Optimal parameters: {params}")
     
     # Verify by extracting
     try:

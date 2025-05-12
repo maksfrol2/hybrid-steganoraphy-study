@@ -531,7 +531,7 @@ class ImageSteganography:
             )
             
             cost_function = lambda particles: self._fitness_function_pso(particles, block_idx)
-            best_cost_pso, best_pos_pso = optimizer.optimize(cost_function, iters=self.max_iterations_pso)
+            best_cost_pso, best_pos_pso = optimizer.optimize(cost_function, iters=self.max_iterations_pso,verbose=False)
             
             if self.verbose:
                 print(f"PSO optimization completed for Block {block_idx + 1}")
@@ -562,7 +562,6 @@ class ImageSteganography:
             final_capacity = self._calculate_capacity(direction, x_offset, y_offset, self.blocks[block_idx]['data'])
             
             print(f"Block {block_idx+1} optimization complete:")
-            print(f"Best parameters: {best_pos}")
             print(f"Best fitness: {-best_cost}")
             print(f"Required capacity: {required_capacity}, Final capacity: {final_capacity}")
             
@@ -623,7 +622,6 @@ class ImageSteganography:
         print(f"Average block PSNR: {sum(block_psnrs)/len(block_psnrs):.2f}")
         print(f"Average block SSIM: {sum(block_ssims)/len(block_ssims):.4f}")
         print(f"Total bit changes: {total_changes} out of {self.host_image.size} pixels ({total_changes/self.host_image.size*100:.2f}%)")
-        print(f"Bits per change ratio: {total_bits/total_changes if total_changes > 0 else 'Infinity'}")
         
         cv2.imwrite(self.output_path, stego_image)
         print(f"Stego image saved to {self.output_path}")
@@ -713,7 +711,6 @@ def main():
     
     print("Steganography complete!")
     print(f"PSNR: {psnr:.2f}")
-    print(f"Optimal parameters: {params}")
     
     try:
         extracted_message = stego.extract(stego_image, params, len(secret_message))

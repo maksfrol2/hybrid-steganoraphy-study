@@ -350,7 +350,7 @@ class ImageSteganography:
                         bounds=bounds
                     )
                     cost_function = lambda particles: self._fitness_function(particles, block_idx)
-                    best_cost, best_pos = optimizer.optimize(cost_function, iters=1)
+                    best_cost, best_pos = optimizer.optimize(cost_function, iters=1,verbose=False)
                     _, current_psnr, _ = self._embed_in_block(self.blocks[block_idx], secret_bits, best_pos)
                     print(f"PSO Best PSNR: {current_psnr:.2f}")
                     
@@ -399,14 +399,12 @@ class ImageSteganography:
             print(f"Required capacity: {required_capacity}, Final capacity: {final_capacity}")
             
             if final_capacity < required_capacity:
-                print(f"WARNING: Best solution for Block {block_idx+1} still has insufficient capacity!")
                 for test_direction in range(16):
                     test_capacity = self._calculate_capacity(test_direction, 0, 0, self.blocks[block_idx]['data'])
                     if test_capacity >= required_capacity:
                         best_params[0] = test_direction
                         best_params[1] = 0
                         best_params[2] = 0
-                        print(f"Forced direction {test_direction} with capacity {test_capacity}")
                         break
             
             optimal_params.append(best_params)
@@ -447,7 +445,6 @@ class ImageSteganography:
         print(f"Average block PSNR: {sum(block_psnrs)/len(block_psnrs):.2f}")
         print(f"Average block SSIM: {sum(block_ssims)/len(block_ssims):.4f}")
         print(f"Total bit changes: {total_changes} out of {self.host_image.size} pixels ({total_changes/self.host_image.size*100:.2f}%)")
-        print(f"Bits per change ratio: {total_bits/total_changes if total_changes > 0 else 'Infinity'}")
         cv2.imwrite(self.output_path, stego_image)
         print(f"Stego image saved to {self.output_path}")
         return stego_image, overall_psnr, optimal_params
@@ -516,7 +513,6 @@ def main():
     stego_image, psnr, params = stego.embed()
     print("Steganography complete!")
     print(f"PSNR: {psnr:.2f}")
-    print(f"Optimal parameters: {params}")
     try:
         extracted_message = stego.extract(stego_image, params, len(secret_message))
         print(f"Extracted message: '{extracted_message[:100]}...'")
